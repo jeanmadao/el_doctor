@@ -1,32 +1,32 @@
-use crossterm::{
-    event::{self, KeyCode, KeyEventKind},
-    terminal::{
-        disable_raw_mode, enable_raw_mode, EnterAlternateScreen,
-        LeaveAlternateScreen,
-    },
-    ExecutableCommand,
-};
-use ratatui::{
-    prelude::{CrosstermBackend, Stylize, Terminal},
-    widgets::Paragraph,
-};
-use std::io::{stdout, Result};
+use std::{error::Error, io};
+use crossterm::{event::DisableMouseCapture, execute, terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen}};
+use ratatui::{backend::CrosstermBackend, Terminal};
 
-fn main() -> Result<()> {
-    stdout().execute(EnterAlternateScreen)?;
+mod app;
+mod ui;
+use crate::app::App;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    // terminal setup
     enable_raw_mode()?;
-    let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
-    terminal.clear()?;
+    let mut stderr = io::stderr();
+    execute!(stderr, EnterAlternateScreen)?;
+    let backend = CrosstermBackend::new(stderr);
+    let mut terminal = Terminal::new(backend)?;
 
-    loop {
-        // TODO draw the UI
-        // TODO handle events
+    // application_startup
+    let mut app = App::new();
+    let _ = App::run_app(&mut terminal, &mut app);
 
-    }
-    // TODO main loop
-
-    stdout().execute(LeaveAlternateScreen)?;
+    // terminal restoration
     disable_raw_mode()?;
+    execute!(
+        terminal.backend_mut(),
+        LeaveAlternateScreen,
+        DisableMouseCapture
+    )?;
+    // terminal.show_cursor()?;
+
     Ok(())
 }
 
