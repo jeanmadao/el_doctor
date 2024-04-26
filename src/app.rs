@@ -5,6 +5,10 @@ use ratatui::{backend::Backend, Terminal};
 
 use crate::ui::ui;
 
+use sysinfo:: {
+    Components, Disk, Networks, System,
+};
+
 pub enum CurrentScreen {
     Main,
     Exiting,
@@ -12,12 +16,14 @@ pub enum CurrentScreen {
 
 pub struct App {
     pub current_screen: CurrentScreen,
+    pub sysinfo: System,
 }
 
 impl App {
     pub fn new() -> App {
         App {
             current_screen: CurrentScreen::Main,
+            sysinfo: System::new_all(),
         }
     }
     pub fn run_app<B: Backend>(

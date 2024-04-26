@@ -1,10 +1,12 @@
 use ratatui::{
-    layout::{Constraint, Direction, Layout}, style::{Color, Style}, text::{Line, Span, Text}, widgets::{Block, Borders, Paragraph}, Frame
+    layout::{Constraint, Direction, Layout},
+    style::{Color, Style},
+    text::{Line, Span, Text},
+    widgets::{Block, Borders, Paragraph},
+    Frame
 };
 
 use crate::app::{App, CurrentScreen};
-
-
 
 pub fn ui(f: &mut Frame, app: &App) {
     let chunks = Layout::default()
@@ -28,6 +30,7 @@ pub fn ui(f: &mut Frame, app: &App) {
 
     f.render_widget(title, chunks[0]);
 
+
     let current_screen_text = vec![
         match app.current_screen {
             CurrentScreen::Main => {
@@ -37,8 +40,37 @@ pub fn ui(f: &mut Frame, app: &App) {
                 Span::styled(" Exiting", Style::default().fg(Color::LightRed))
             }
         }
-        .to_owned(),
     ];
+
+    let outer_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(vec![
+                     Constraint::Percentage(50),
+                     Constraint::Percentage(50),
+        ])
+        .split(chunks[1]);
+
+    let inner_layout = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(vec![
+            Constraint::Percentage(25),
+            Constraint::Percentage(75),
+        ])
+        .split(outer_layout[0]);
+
+    f.render_widget(
+        Paragraph::new("Processes")
+        .block(Block::new().borders(Borders::ALL)),
+        outer_layout[1]);
+    f.render_widget(
+        Paragraph::new("system")
+        .block(Block::new().borders(Borders::ALL)),
+        inner_layout[0]);
+    f.render_widget(
+        Paragraph::new("CPU")
+        .block(Block::new().borders(Borders::ALL)),
+        inner_layout[1]);
+
 
     let footer_chunks = Layout::default()
         .direction(Direction::Horizontal)
