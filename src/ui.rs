@@ -5,6 +5,7 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
     Frame
 };
+use sysinfo::System;
 
 use crate::app::{App, CurrentScreen};
 
@@ -59,17 +60,17 @@ pub fn ui(f: &mut Frame, app: &App) {
         .split(outer_layout[0]);
 
     f.render_widget(
-        Paragraph::new("Processes")
-        .block(Block::new().borders(Borders::ALL)),
-        outer_layout[1]);
-    f.render_widget(
-        Paragraph::new("system")
+        Paragraph::new(format!("System: {System::name().unwrap_or("Unknown".to_string())}"))
         .block(Block::new().borders(Borders::ALL)),
         inner_layout[0]);
     f.render_widget(
         Paragraph::new("CPU")
         .block(Block::new().borders(Borders::ALL)),
         inner_layout[1]);
+    f.render_widget(
+        Paragraph::new("Process")
+        .block(Block::new().borders(Borders::ALL)),
+        outer_layout[1]);
 
 
     let footer_chunks = Layout::default()
